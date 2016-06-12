@@ -1,3 +1,7 @@
+# Python version of tutsim.cc
+# Implements a very basic agent based model
+# Code can be used as basis for more complex models.
+
 import numpy
 import random
 
