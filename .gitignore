@@ -1,0 +1,10 @@
+*~
+tutsim
+a.out
+*.o
+tutsim-dev
+*.pyc
+tutorial/lib/
+tutorial/bin/
+tutorial/include/
+
