@@ -49,7 +49,7 @@ parameters = data.frame(NUM_YEARS=NUM_YEARS,
                         START_DATE=START_DATE,
                         PROB_NEW_PARTNER=PROB_NEW_PARTNER,
                         FORCE_INFECTION=FORCE_INFECTION)
-agents = make_agents(100)
+agents = make_agents(10000)
 print(summary(agents))
 agents = simulate(agents, parameters)
 print(summary(agents))

@@ -5,7 +5,7 @@
 import numpy
 import random
 
-YEAR = 365.25
+YEAR = 365
 MALE = 0
 FEMALE = 1
 
@@ -74,7 +74,7 @@ def main():
         'PROB_NEW_PARTNER': 0.022,
         'FORCE_INFECTION': 0.1
     }
-    agents = [Agent() for _ in range(100)]
+    agents = [Agent() for _ in range(10000)]
     print_verbose_agent_info(agents)
     simulate(agents, parameters)
     print_verbose_agent_info(agents)

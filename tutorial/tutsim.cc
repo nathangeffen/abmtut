@@ -12,7 +12,7 @@
 
 std::mt19937 generator;
 
-const double YEAR = 365.25;
+const double YEAR = 365;
 
 enum Sex {
   MALE = 0,
@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
   // To seed based on time, check out this code:
   // http://www.cplusplus.com/reference/random/mersenne_twister_engine/seed/
 
-  std::vector<Agent> agents(100); // Declare 100 agents
+  std::vector<Agent> agents(10000); // Declare 100 agents
   initialize_agents(agents);
   // Let's get a detailed report on our demographics
   print_verbose_agent_info(agents);
