@@ -26,7 +26,9 @@ simulate <- function(agents, parameters) {
     agents <- agent_events(agents, parameters)
     num_hiv <- sum(agents$hiv > 0)
     prevalence <- num_hiv / nrow(agents)
-    print(c(t,num_hiv,prevalence))
+    print(paste(t,
+                " Num infected: ",num_hiv,
+                " Prevalence: ",prevalence))
   }
   return(agents)
 }
