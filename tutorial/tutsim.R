@@ -1,55 +1,54 @@
-YEAR = 365
-MALE = 0
-FEMALE = 1
-
-make_agents <- function(num_agents) {
-  id <- c(1:100)
-  sex <- sample(MALE:FEMALE, num_agents, replace=T)
-  age <- runif(num_agents,15,20)
-  hiv = rgeom(num_agents, 0.9)
-  agents <- data.frame(id=id, sex=sex, age=age, hiv=hiv)
-  agents
+make_agents <- function(num_agents, min_age=15, max_age=20) {
+  gender <- factor(c("male","female"))
+  agents <- data.frame(id=c(1:num_agents), 
+                       sex=sample(gender, num_agents, replace=T), 
+                       age=runif(num_agents,min_age,max_age), 
+                       hiv=rgeom(num_agents, 0.9))
+  return(agents)
 }
 
 agent_events <- function(agents, parameters) {
-  num_agents = nrow(agents)
-  # Shuffle
-  agents = agents[sample(num_agents, num_agents), ]
+  # I don't understand the purpose of the shuffle step - it shouldn't affect the individual SC probabilities
   # Increment age
-  agents$age = agents$age + parameters$TIME_STEP
+  agents$age <- agents$age + parameters$time_step
   # Infections
-  prevalence = sum(agents$hiv > 0) / num_agents
-  risk_infection = parameters$FORCE_INFECTION * parameters$PROB_NEW_PARTNER * prevalence
-  # This is ugly? Sets agents who are HIV- to HIV+ if random number generator
-  # produces value < risk_infection.
-  agents$hiv[agents$hiv==0] = runif(length(agents$hiv[agents$hiv==0])) < risk_infection
-  agents
+  prevalence <- sum(agents$hiv > 0) / nrow(agents)
+  risk_infection <- parameters$force_infection * parameters$prob_new_partner * prevalence
+  agents$hiv[agents$hiv==0] <- rbinom(length(agents$hiv[agents$hiv==0]),1,risk_infection)
+  return(agents)
 }
 
 simulate <- function(agents, parameters) {
-  num_iterations = parameters$NUM_YEARS / parameters$TIME_STEP
-  for (i in 1:num_iterations) {
-      agents = agent_events(agents, parameters)
-      current_date = parameters$START_DATE + i * parameters$TIME_STEP
-      num_hiv = sum(agents$hiv > 0)
-      prevalence = num_hiv / nrow(agents)
-      output = c(current_date, num_hiv, prevalence)
-      print(output)
+  time <- seq(from=parameters$start_date,
+              to=parameters$start_date+parameters$num_years,
+              by=parameters$time_step)
+  for (t in time) {
+    agents <- agent_events(agents, parameters)
+    num_hiv <- sum(agents$hiv > 0)
+    prevalence <- num_hiv / nrow(agents)
+    print(c(t,num_hiv,prevalence))
   }
-  agents
+  return(agents)
 }
 
-NUM_YEARS = 2.0
-TIME_STEP = 1.0 / YEAR
-START_DATE = 2015.0
-PROB_NEW_PARTNER = 0.022
-FORCE_INFECTION = 0.1
-parameters = data.frame(NUM_YEARS=NUM_YEARS,
-                        TIME_STEP=TIME_STEP,
-                        START_DATE=START_DATE,
-                        PROB_NEW_PARTNER=PROB_NEW_PARTNER,
-                        FORCE_INFECTION=FORCE_INFECTION)
-agents = make_agents(10000)
+parameters <- list(start_date=2015,
+                num_years=2,
+                time_step=1/365,
+                prob_new_partner=0.022,
+                force_infection=0.1)
+
+agents <- make_agents(10000, min_age = 15, max_age = 20)
 print(summary(agents))
-agents = simulate(agents, parameters)
+agents <- simulate(agents, parameters)
 print(summary(agents))
+
+# Test how much time is taken by printing out results
+system.time(simulate(agents, parameters))
+simulate <- function(agents, parameters) {
+  time <- seq(from=parameters$start_date,
+              to=parameters$start_date+parameters$num_years,
+              by=parameters$time_step)
+  for (t in time) { agents <- agent_events(agents, parameters) }
+  return(agents)
+}
+system.time(simulate(agents, parameters))
